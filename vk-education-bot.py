@@ -129,7 +129,8 @@ def get_special_questions_keyboard():
 
 def find_similar_questions(user_question):
     all_q = list(all_questions.keys())
-    matches = get_close_matches(user_question.lower(), [q.lower() for q in all_q], n=3, cutoff=0.5)
+    matches = get_close_matches(
+        user_question.lower(), [q.lower() for q in all_q], n=3, cutoff=0.5)
     return [q for q in all_q if q.lower() in matches]
 
 def process_message(user_id, message):
@@ -238,27 +239,21 @@ def process_message(user_id, message):
 
 
 def process_unread_messages():
-    """Обрабатывает непрочитанные сообщения при старте бота"""
     try:
-        # Получаем последние 200 непрочитанных сообщений
         unread = vk.messages.getConversations(filter='unread', count=200)
 
         for item in unread['items']:
             user_id = item['last_message']['from_id']
             message = item['last_message']['text']
 
-            # Проверяем, что сообщение не от администратора
             if str(user_id) != ADMIN_ID:
                 process_message(user_id, message)
 
-                # Помечаем сообщение как прочитанное
                 vk.messages.markAsRead(peer_id=user_id)
 
     except Exception as e:
         print(f"Ошибка при обработке непрочитанных сообщений: {e}")
 
-
-# Вызываем обработку непрочитанных сообщений при старте
 process_unread_messages()
 
 
